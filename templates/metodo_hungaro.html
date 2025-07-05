@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Método Húngaro | Grupo 2 | Inves. Operativa{% endblock %}
+
+{% block content %}
+<!-- Navegación -->
+<nav class="mb-4">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver al Inicio
+    </a>
+    <a href="{{ url_for('programacion_lineal') }}" class="btn btn-outline-primary ms-2">
+        <i class="bi bi-graph-up"></i> Programación Lineal
+    </a>
+    <button class="btn btn-outline-info ms-2" onclick="Historial.toggleHistorial()">
+        <i class="bi bi-clock-history"></i> Ver Historial
+    </button>
+</nav>
+
+<!-- Título del método -->
+<div class="card presentation-card mb-4">
+    <div class="card-header">
+        <h2 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> Método Húngaro</h2>
+    </div>
+    <div class="card-body">
+        <p>Resuelve problemas de asignación óptima entre trabajadores y tareas. Configura tu matriz de costos y encuentra la asignación que minimice el costo total o maximice el beneficio.</p>
+    </div>
+</div>
+
+<!-- Método Húngaro -->
+<div id="metodo-hungaro">
+    <div class="mb-3">
+        <label for="objetivoHungaro" class="form-label">Seleccionar Objetivo:</label>
+        <select id="objetivoHungaro" class="form-select">
+            <option value="minimizar" selected>Minimizar</option>
+            <option value="maximizar">Maximizar</option>
+        </select>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered" id="matrizCostos">
+            <thead>
+                <tr id="filaEncabezado">
+                    <th style="width: 50px;"></th>
+                    <th>Trabajo 1 <button class="btn btn-sm btn-link p-0 ms-1" onclick="HungarianMethods.renombrarColumna(0)"><i class="bi bi-pencil-square"></i></button></th>
+                    <th>Trabajo 2 <button class="btn btn-sm btn-link p-0 ms-1" onclick="HungarianMethods.renombrarColumna(1)"><i class="bi bi-pencil-square"></i></button></th>
+                    <th>Trabajo 3 <button class="btn btn-sm btn-link p-0 ms-1" onclick="HungarianMethods.renombrarColumna(2)"><i class="bi bi-pencil-square"></i></button></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Trabajador 1 <button class="btn btn-sm btn-link p-0 ms-1" onclick="HungarianMethods.renombrarFila(0)"><i class="bi bi-pencil-square"></i></button></th>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                </tr>
+                <tr>
+                    <th>Trabajador 2 <button class="btn btn-sm btn-link p-0 ms-1" onclick="HungarianMethods.renombrarFila(1)"><i class="bi bi-pencil-square"></i></button></th>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                </tr>
+                <tr>
+                    <th>Trabajador 3 <button class="btn btn-sm btn-link p-0 ms-1" onclick="HungarianMethods.renombrarFila(2)"><i class="bi bi-pencil-square"></i></button></th>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-controls">
+        <button class="btn btn-sm btn-light" onclick="HungarianMethods.agregarFila()"><i class="bi bi-plus-circle"></i> Fila</button>
+        <button class="btn btn-sm btn-light" onclick="HungarianMethods.agregarColumna()"><i class="bi bi-plus-circle"></i> Columna</button>
+        <button class="btn btn-sm btn-light" onclick="HungarianMethods.eliminarFila()"><i class="bi bi-dash-circle"></i> Fila</button>
+        <button class="btn btn-sm btn-light" onclick="HungarianMethods.eliminarColumna()"><i class="bi bi-dash-circle"></i> Columna</button>
+    </div>
+
+    <div class="mb-3">
+        <label for="inputExcelFile" class="form-label">Cargar matriz desde Excel:</label>
+        <input type="file" id="inputExcelFile" class="form-control form-control-sm" accept=".xlsx, .xls" onchange="HungarianMethods.cargarDesdeExcel(event)">
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-danger action-btn" onclick="HungarianMethods.borrarDatos()"><i class="bi bi-trash"></i> Borrar Datos</button>
+        <button class="btn btn-primary action-btn" onclick="HungarianMethods.resolver()"><i class="bi bi-gear"></i> Resolver con Método Húngaro</button>
+    </div>
+    
+    <div id="resultado-hungaro"></div>
+
+<!-- Análisis de Sensibilidad -->
+<div id="analisis-sensibilidad-hungaro" class="mt-4" style="display: none;">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Análisis de Sensibilidad</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Parámetros de Análisis</h6>
+                    <div class="mb-3">
+                        <label for="porcentajeVariacion" class="form-label">Porcentaje de Variación (%)</label>
+                        <input type="number" id="porcentajeVariacion" class="form-control" value="10" min="1" max="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoAnalisis" class="form-label">Tipo de Análisis</label>
+                        <select id="tipoAnalisis" class="form-select">
+                            <option value="todos">Todos los costos</option>
+                            <option value="individual">Costo individual</option>
+                        </select>
+                    </div>
+                    <div id="seleccionCosto" class="mb-3" style="display: none;">
+                        <label for="costoIndividual" class="form-label">Seleccionar Costo</label>
+                        <select id="costoIndividual" class="form-select"></select>
+                    </div>
+                    <button class="btn btn-info" onclick="HungarianMethods.analizarSensibilidad()">
+                        <i class="bi bi-calculator"></i> Realizar Análisis
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <div id="resultados-sensibilidad-hungaro"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="{{ url_for('static', filename='js/metodo_hungaro.js') }}"></script>
+{% endblock %}

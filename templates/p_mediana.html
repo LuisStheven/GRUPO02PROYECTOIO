@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}P-Mediana | Grupo 2 | Inves. Operativa{% endblock %}
+
+{% block content %}
+<!-- Navegación -->
+<nav class="mb-4">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver al Inicio
+    </a>
+    <a href="{{ url_for('metodo_hungaro') }}" class="btn btn-outline-primary ms-2">
+        <i class="bi bi-grid-3x3-gap"></i> Método Húngaro
+    </a>
+    <a href="{{ url_for('programacion_lineal') }}" class="btn btn-outline-success ms-2">
+        <i class="bi bi-graph-up"></i> Programación Lineal
+    </a>
+    <button class="btn btn-outline-info ms-2" onclick="Historial.toggleHistorial()">
+        <i class="bi bi-clock-history"></i> Ver Historial
+    </button>
+</nav>
+
+<!-- Título del método -->
+<div class="card presentation-card mb-4">
+    <div class="card-header">
+        <h2 class="mb-0"><i class="bi bi-geo-alt"></i> Método P-Mediana</h2>
+    </div>
+    <div class="card-body">
+        <p>Determina la ubicación óptima de P instalaciones para minimizar la distancia total a los puntos de demanda. Configura tu matriz de distancias y especifica el número de medianas a ubicar.</p>
+        <div class="alert alert-info mt-3">
+            <strong>¿Qué es P-Mediana?</strong><br>
+            El problema P-Mediana busca ubicar P instalaciones (medianas) de tal manera que se minimice la suma total de las distancias desde cada cliente hasta su mediana más cercana asignada.
+        </div>
+    </div>
+</div>
+
+<!-- Método P-Mediana -->
+<div id="metodo-p-mediana">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="numeroMedianas" class="form-label">Número de Medianas (P):</label>
+            <input type="number" id="numeroMedianas" class="form-control" min="1" value="2" placeholder="Ej: 2">
+            <small class="form-text text-muted">Número de instalaciones a ubicar</small>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered" id="matrizDistancias">
+            <thead>
+                <tr id="filaEncabezadoDistancias">
+                    <th style="width: 50px;"></th>
+                    <th>Ubicación 1 <button class="btn btn-sm btn-link p-0 ms-1" onclick="PMedianaMethods.renombrarColumna(0)"><i class="bi bi-pencil-square"></i></button></th>
+                    <th>Ubicación 2 <button class="btn btn-sm btn-link p-0 ms-1" onclick="PMedianaMethods.renombrarColumna(1)"><i class="bi bi-pencil-square"></i></button></th>
+                    <th>Ubicación 3 <button class="btn btn-sm btn-link p-0 ms-1" onclick="PMedianaMethods.renombrarColumna(2)"><i class="bi bi-pencil-square"></i></button></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Cliente 1 <button class="btn btn-sm btn-link p-0 ms-1" onclick="PMedianaMethods.renombrarFila(0)"><i class="bi bi-pencil-square"></i></button></th>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                </tr>
+                <tr>
+                    <th>Cliente 2 <button class="btn btn-sm btn-link p-0 ms-1" onclick="PMedianaMethods.renombrarFila(1)"><i class="bi bi-pencil-square"></i></button></th>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                </tr>
+                <tr>
+                    <th>Cliente 3 <button class="btn btn-sm btn-link p-0 ms-1" onclick="PMedianaMethods.renombrarFila(2)"><i class="bi bi-pencil-square"></i></button></th>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                    <td><input type="number" step="any" class="form-control form-control-sm matrix-input" value="0" min="0"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-controls">
+        <button class="btn btn-sm btn-light" onclick="PMedianaMethods.agregarFila()"><i class="bi bi-plus-circle"></i> Cliente</button>
+        <button class="btn btn-sm btn-light" onclick="PMedianaMethods.agregarColumna()"><i class="bi bi-plus-circle"></i> Ubicación</button>
+        <button class="btn btn-sm btn-light" onclick="PMedianaMethods.eliminarFila()"><i class="bi bi-dash-circle"></i> Cliente</button>
+        <button class="btn btn-sm btn-light" onclick="PMedianaMethods.eliminarColumna()"><i class="bi bi-dash-circle"></i> Ubicación</button>
+    </div>
+
+    <div class="mb-3">
+        <label for="inputExcelFileDistancias" class="form-label">Cargar matriz desde Excel:</label>
+        <input type="file" id="inputExcelFileDistancias" class="form-control form-control-sm" accept=".xlsx, .xls" onchange="PMedianaMethods.cargarDesdeExcel(event)">
+        <small class="form-text text-muted">El archivo debe contener una matriz cuadrada de distancias</small>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-danger action-btn" onclick="PMedianaMethods.borrarDatos()"><i class="bi bi-trash"></i> Borrar Datos</button>
+        <button class="btn btn-primary action-btn" onclick="PMedianaMethods.resolver()"><i class="bi bi-gear"></i> Resolver P-Mediana</button>
+    </div>
+    
+    <div id="resultado-p-mediana"></div>
+
+<!-- Análisis de Sensibilidad -->
+<div id="analisis-sensibilidad-pmediana" class="mt-4" style="display: none;">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Análisis de Sensibilidad</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Parámetros de Análisis</h6>
+                    <div class="mb-3">
+                        <label for="porcentajeVariacionPM" class="form-label">Porcentaje de Variación (%)</label>
+                        <input type="number" id="porcentajeVariacionPM" class="form-control" value="10" min="1" max="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoAnalisisPM" class="form-label">Tipo de Análisis</label>
+                        <select id="tipoAnalisisPM" class="form-select">
+                            <option value="distancias">Distancias</option>
+                            <option value="p">Número de Medianas (P)</option>
+                            <option value="ambos">Ambos</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-info" onclick="PMedianaMethods.analizarSensibilidad()">
+                        <i class="bi bi-calculator"></i> Realizar Análisis
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <div id="resultados-sensibilidad-pmediana"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="{{ url_for('static', filename='js/p_mediana.js') }}"></script>
+{% endblock %}

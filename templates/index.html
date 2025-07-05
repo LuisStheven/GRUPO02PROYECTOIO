@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Solver de Métodos Directos | Grupo 2 | Inves. Operativa{% endblock %}
+
+{% block content %}
+<!-- Cuadro de Presentación -->
+<div class="card presentation-card mb-4">
+    <div class="card-header">
+        <h2 class="mb-0">Presentación del Grupo</h2>
+    </div>
+    <div class="card-body">
+        <p>Hola, somos el grupo 2. Bienvenido a nuestra página web, aquí podrás resolver problemas de Asignación, Localización y Planificación. Tan solo elige el método que deseas usar para resolverlo. No hay límites.</p>
+    </div>
+</div>
+
+<!-- Métodos disponibles -->
+<div class="mb-4">
+    <h2 class="text-center mb-4"><i class="bi bi-tools"></i> Métodos Disponibles</h2>
+    
+    <div class="row">
+        <!-- Método Húngaro -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card method-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-grid-3x3-gap text-primary"></i> Método Húngaro
+                    </h5>
+                    <p class="card-text">
+                        Resuelve problemas de asignación óptima entre trabajadores y tareas, minimizando costos o maximizando beneficios.
+                    </p>
+                    <a href="{{ url_for('metodo_hungaro') }}" class="btn btn-primary">
+                        Usar Método Húngaro
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Programación Lineal -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card method-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-graph-up text-primary"></i> Programación Lineal
+                    </h5>
+                    <p class="card-text">
+                        Optimiza funciones lineales sujetas a restricciones lineales para encontrar la solución óptima.
+                    </p>
+                    <a href="{{ url_for('programacion_lineal') }}" class="btn btn-primary">
+                        Usar Programación Lineal
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Método del Centroide -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card method-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-bullseye text-primary"></i> Método del Centroide
+                    </h5>
+                    <p class="card-text">
+                        Encuentra la ubicación óptima basada en el centro geométrico de las demandas para minimizar costos.
+                    </p>
+                    <a href="{{ url_for('centroide') }}" class="btn btn-primary">
+                        Usar Método del Centroide
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- P-Mediana -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card method-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-geo-alt text-primary"></i> P-Mediana
+                    </h5>
+                    <p class="card-text">
+                        Determina la ubicación óptima de P instalaciones para minimizar la distancia total a los puntos de demanda.
+                    </p>
+                    <a href="{{ url_for('p_mediana') }}" class="btn btn-primary">
+                        Usar P-Mediana
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

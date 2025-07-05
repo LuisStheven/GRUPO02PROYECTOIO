@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Método del Centroide | Grupo 2 | Inves. Operativa{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cartesian-canvas {
+    background: #f8f9fa;
+    border: 2px solid #e3e6f0;
+    cursor: crosshair;
+    border-radius: 8px;
+  }
+  
+  .data-point {
+    transition: all 0.2s ease;
+  }
+  
+  .data-point:hover {
+    r: 10;
+    stroke-width: 3;
+  }
+  
+  .centroid-marker {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+  
+  .tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    display: none;
+    max-width: 200px;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  }
+
+  .canvas-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .canvas-controls button {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .canvas-controls button:hover {
+    background: white;
+  }
+
+  .canvas-info {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #666;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Navegación -->
+<nav class="mb-4">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver al Inicio
+    </a>
+    <a href="{{ url_for('metodo_hungaro') }}" class="btn btn-outline-primary ms-2">
+        <i class="bi bi-grid-3x3-gap"></i> Método Húngaro
+    </a>
+    <a href="{{ url_for('programacion_lineal') }}" class="btn btn-outline-success ms-2">
+        <i class="bi bi-graph-up"></i> Programación Lineal
+    </a>
+    <a href="{{ url_for('p_mediana') }}" class="btn btn-outline-warning ms-2">
+        <i class="bi bi-geo-alt"></i> P-Mediana
+    </a>
+    <button class="btn btn-outline-info ms-2" onclick="Historial.toggleHistorial()">
+        <i class="bi bi-clock-history"></i> Ver Historial
+    </button>
+</nav>
+
+<!-- Título del método -->
+<div class="card presentation-card mb-4">
+    <div class="card-header">
+        <h2 class="mb-0"><i class="bi bi-bullseye"></i> Método del Centroide</h2>
+    </div>
+    <div class="card-body">
+        <p>Encuentra la ubicación óptima basada en el centro geométrico de las demandas para minimizar costos de transporte. Agrega puntos de demanda con sus coordenadas y costos asociados.</p>
+        <div class="alert alert-info mt-3">
+            <strong>¿Cómo funciona?</strong><br>
+            El método del centroide calcula el punto óptimo (X*, Y*) que minimiza la suma ponderada de las distancias a todos los puntos de demanda, considerando sus costos de transporte.
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Panel de Control -->
+    <div class="col-md-6">
+        <!-- Formulario para agregar puntos -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Agregar Punto de Demanda</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="pointName" class="form-label">Nombre del Punto</label>
+                        <input id="pointName" type="text" class="form-control" placeholder="Ej: Cliente A">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="transportCost" class="form-label">Costo de Transporte</label>
+                        <input id="transportCost" type="number" step="0.01" class="form-control" placeholder="Ej: 2.5">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="xCoordinate" class="form-label">Coordenada X</label>
+                        <input id="xCoordinate" type="number" step="0.1" class="form-control" placeholder="Ej: 10">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="yCoordinate" class="form-label">Coordenada Y</label>
+                        <input id="yCoordinate" type="number" step="0.1" class="form-control" placeholder="Ej: 15">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button id="addPointButton" class="btn btn-primary">
+                        <i class="bi bi-plus-lg"></i> Agregar Punto
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <button id="solveCentroid" class="btn btn-success me-2">
+                    <i class="bi bi-gear"></i> Calcular Centroide
+                </button>
+                <button id="resetAll" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Limpiar Todo
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de puntos -->
+        <div id="pointsList" class="card" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Puntos Agregados</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>X</th>
+                                <th>Y</th>
+                                <th>Costo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pointsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div id="centroidResult" class="mt-4"></div>
+        
+        <!-- Análisis de Sensibilidad -->
+        <div id="analisis-sensibilidad-centroide" class="mt-4" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Análisis de Sensibilidad</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Parámetros de Análisis</h6>
+                            <div class="mb-3">
+                                <label for="porcentajeVariacionCentroide" class="form-label">Porcentaje de Variación (%)</label>
+                                <input type="number" id="porcentajeVariacionCentroide" class="form-control" value="10" min="1" max="50">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tipoAnalisisCentroide" class="form-label">Tipo de Análisis</label>
+                                <select id="tipoAnalisisCentroide" class="form-select">
+                                    <option value="coordenadas">Coordenadas</option>
+                                    <option value="costos">Costos</option>
+                                    <option value="ambos">Ambos</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-info" onclick="CentroideMethods.analizarSensibilidad()">
+                                <i class="bi bi-calculator"></i> Realizar Análisis
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="resultados-sensibilidad-centroide"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel del Gráfico -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Plano Cartesiano Interactivo</h5>
+            </div>
+            <div class="card-body p-2">
+                <div class="position-relative">
+                    <svg id="cartesianCanvas" class="cartesian-canvas w-100"></svg>
+                    <div id="tooltip" class="tooltip"></div>
+                    
+                    <!-- Información del canvas -->
+                    <div class="canvas-info">
+                        <i class="bi bi-info-circle"></i> 
+                        <strong>Controles:</strong> Click para agregar puntos | Rueda del mouse para zoom | Arrastrar para mover
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div id="confirmModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h4 class="mb-3"><i class="bi bi-exclamation-triangle text-warning"></i> ¿Estás seguro?</h4>
+        <p class="mb-4">Esta acción eliminará todos los puntos ingresados y el centroide calculado.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <button id="confirmYes" class="btn btn-danger">
+                <i class="bi bi-check"></i> Sí, borrar
+            </button>
+            <button id="confirmNo" class="btn btn-secondary">
+                <i class="bi bi-x"></i> Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/centroide.js') }}"></script>
+{% endblock %}
