@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Solver de Métodos Directos | Grupo 2{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container py-5">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Sidebar del Historial -->
+    <div id="historial-overlay" onclick="Historial.cerrarHistorial()"></div>
+    <div id="historial-sidebar">
+        <div class="historial-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historial</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-light" onclick="Historial.cerrarHistorial()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-sm btn-outline-light me-1" onclick="Historial.exportarHistorial()" title="Exportar historial">
+                    <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-light" onclick="Historial.limpiarHistorial()" title="Limpiar historial">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="historial-content">
+            <div id="historial-container">
+                <!-- El contenido se carga dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/historial.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ai_interpretador.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

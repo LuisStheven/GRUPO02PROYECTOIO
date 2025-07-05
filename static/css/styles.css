@@ -1,0 +1,208 @@
+:root {
+  --primary-color: #4e73df;
+  --secondary-color: #f8f9fc;
+  --accent-color: #2e59d9;
+}
+
+body {
+  background-color: #f8f9fc;
+  font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.presentation-card {
+  border-radius: 0.5rem;
+  border: 1px solid #4e73df;
+  background-color: #e9f7ff;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+  background-color: var(--primary-color);
+  color: white;
+  border-bottom: none;
+  padding: 1rem 1.35rem;
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.table-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.matrix-input {
+  width: 80px;
+  text-align: center;
+}
+
+#resultado_lp,
+#resultado-hungaro {
+  min-height: 100px;
+  background-color: white;
+  border-radius: 0.35rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: 1px solid #e3e6f0;
+}
+
+.action-btn {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.hidden {
+  display: none;
+}
+
+/* Estilos para los métodos disponibles */
+.method-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e3e6f0;
+  border-radius: 0.5rem;
+  background: white;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.method-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.25);
+  border-color: var(--primary-color);
+}
+
+.method-card .card-body {
+  padding: 1.5rem;
+}
+
+.method-card .card-title {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.method-card .card-text {
+  color: #5a5c69;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.method-card .btn {
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.method-card:hover .btn-primary {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+/* Estilos para el sidebar del historial */
+#historial-sidebar {
+  position: fixed;
+  top: 0;
+  left: -350px;
+  width: 350px;
+  height: 100vh;
+  background: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1050;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+#historial-sidebar.show {
+  left: 0;
+}
+
+#historial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+#historial-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.historial-item .card-sm {
+  border-radius: 8px;
+  border: 1px solid #e3e6f0;
+}
+
+.historial-item .card-sm:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.historial-header {
+  background: var(--primary-color, #4e73df);
+  color: white;
+  padding: 1rem;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+.historial-content {
+  padding: 1rem;
+}
+
+/* Responsive para las tarjetas */
+@media (max-width: 768px) {
+  .method-card {
+    margin-bottom: 1rem;
+  }
+
+  #historial-sidebar {
+    width: 300px;
+    left: -300px;
+  }
+}
+
+@media (max-width: 992px) {
+  .col-lg-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+/* Loading spinner */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
