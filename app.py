@@ -19,7 +19,7 @@ app.static_folder = 'static'
 app.template_folder = 'templates'
 
 # Configuración de OpenRouter AI - CORREGIDO
-OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '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')
+OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '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')
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # Almacenamiento en memoria para el historial (en producción usar base de datos)
